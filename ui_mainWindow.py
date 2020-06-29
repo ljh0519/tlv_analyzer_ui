@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (QMainWindow, QWidget, QMenu, QDialog,
                              QAction, qApp, QLabel, QFileDialog,
                              QPushButton, QVBoxLayout, QHBoxLayout,
                              QGroupBox, QGridLayout, QDesktopWidget,
-                             QDockWidget, QSplitter)
+                             QDockWidget, QSplitter, QFormLayout)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QResizeEvent
 from ui_menubar import UI_menuBar
@@ -32,28 +32,14 @@ class UI_mainWindow(QMainWindow):
         self.__initMainWindow()
 
     def __initMainWindow(self):
+        availGeometry = QDesktopWidget().availableGeometry()
+        self.resize(availGeometry.width()*0.7, availGeometry.height()*0.7)
+        self.__center()
+
         self.__menubar_ = UI_menuBar()
         self.setMenuBar(self.__menubar_)
-        # mainLayout = QGridLayout()
-        # # mainLayout.addWidget(self.__tlvInfoGB_, 0, 0, 10, 1)
-        # # mainLayout.addWidget(self.__videoGB_, 0, 1, 8, 6)
-        # # mainLayout.addWidget(self.__audioGB_, 8, 1, 2, 6)
-        # # mainLayout.addWidget(self.__tlvPkgListGB_, 0, 7, 10, 3)
-        # mainLayout.addWidget(self.__hsplitter_, 0, 0, 10, 1)
-        # mainLayout.addWidget(self.__videoGB_, 0, 1, 8, 6)
-        # mainLayout.addWidget(self.__audioGB_, 8, 1, 2, 6)
-        # mainLayout.addWidget(self.__tlvPkgListGB_, 0, 7, 10, 3)
-        # mainLayout.setRowStretch(1, 1)
-        # mainLayout.setRowStretch(2, 1)
-        # mainLayout.setColumnStretch(0, 1)
-        # mainLayout.setColumnStretch(1, 1)
-        # w = QWidget()
-        # w.setLayout(mainLayout)
         self.setCentralWidget(self.__hsplitter_)
-
-        self.resize(self.__winResolution_[0], self.__winResolution_[1])
         self.setWindowTitle('tlv分析工具')
-        self.__center()
 
     def __center(self):
         qr = self.frameGeometry()
@@ -62,18 +48,13 @@ class UI_mainWindow(QMainWindow):
         self.move(qr.topLeft())
 
     def __initTlvInfoLayout(self):
-        # hlayout = QHBoxLayout()
-        # hlayout.addStretch(1)
-        # hlayout.addWidget()
-        # hlayout.addStretch(1)
-
-        vlayout = QVBoxLayout()
-        vlayout.addStretch(1)
-        vlayout.addWidget(QLabel('TLV INFO'))
-        vlayout.addStretch(1)
-        tlvInfo = QGroupBox("TLV INFO")
-        tlvInfo.setLayout(vlayout)
-        self.__hsplitter_.addWidget(tlvInfo)
+        tlvinfo = QLabel('FILE INFO')
+        tlvinfo.setFrameShape(QLabel.StyledPanel)
+        flayout = QFormLayout()
+        flayout.addRow(tlvinfo)
+        tlvInfoGB = QGroupBox("TLV INFO")
+        tlvInfoGB.setLayout(flayout)
+        self.__hsplitter_.addWidget(tlvInfoGB)
 
     def __initTlvPkgListLayout(self):
         vlayout = QVBoxLayout()
@@ -122,8 +103,8 @@ class UI_videoLabel(QLabel):
 
     def __initUI(self):
         # C:\Users\Li\Pictures\Tieba\test.jpg
-        # self.__images_ = QPixmap('C:\\Users\\Li\\Pictures\\Tieba\\test.jpg')
-        self.__images_ = QPixmap("C:\\Users\\Li\\Pictures\\test.jpg")
+        self.__images_ = QPixmap('C:\\Users\\Li\\Pictures\\Tieba\\test.jpg')
+        # self.__images_ = QPixmap("C:\\Users\\Li\\Pictures\\test.jpg")
         self.setPixmap(self.__images_)
 
     def resizeEvent(self, e: QResizeEvent) -> None:
