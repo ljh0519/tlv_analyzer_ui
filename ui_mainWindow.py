@@ -85,7 +85,19 @@ class UI_mainWindow(QMainWindow):
         self.__hsplitter_.addWidget(tlvPkgList)
 
     def __initVideoLayout(self):
-        video = UI_video()
+        label = UI_videoLabel()
+        label.setMinimumSize(320, 240)
+        # video.setGeometry(0,0, 320, 240)
+        hlayout = QHBoxLayout()
+        hlayout.addStretch(1)
+        hlayout.addWidget(label)
+        hlayout.addStretch(1)
+        vlayout = QVBoxLayout()
+        # vlayout.addStretch(1)
+        vlayout.addLayout(hlayout)
+        # vlayout.addStretch(1)
+        video = QGroupBox("Video Replay")
+        video.setLayout(vlayout)
         self.__vsplitter_.addWidget(video)
 
     def __initAudioLayout(self):
@@ -101,51 +113,36 @@ class UI_mainWindow(QMainWindow):
         self.__hsplitter_.addWidget(self.__vsplitter_)
 
 
-class UI_video(QGroupBox):
+class UI_videoLabel(QLabel):
     __images_ = None
 
     def __init__(self):
-        super(UI_video, self).__init__()
+        super(UI_videoLabel, self).__init__()
         self.__initUI()
 
     def __initUI(self):
-        #C:\Users\Li\Pictures\Tieba\test.jpg
-        self.__images_ = QPixmap('C:\\Users\\Li\\Pictures\\Tieba\\test.jpg')
-        self.__videoLabel_ = QLabel()
-        self.__videoLabel_.setPixmap(self.__images_)
-        hlayout = QHBoxLayout()
-        hlayout.addStretch(1)
-        hlayout.addWidget(self.__videoLabel_)
-        hlayout.addStretch(1)
-
-        vlayout = QVBoxLayout()
-        vlayout.addStretch(1)
-        vlayout.addLayout(hlayout)
-        vlayout.addStretch(1)
-        video = QGroupBox("Video Replay")
-        video.setMinimumSize(320, 240)
-        # video.setGeometry(0,0, 320, 240)
-        video.setLayout(vlayout)
+        # C:\Users\Li\Pictures\Tieba\test.jpg
+        # self.__images_ = QPixmap('C:\\Users\\Li\\Pictures\\Tieba\\test.jpg')
+        self.__images_ = QPixmap("C:\\Users\\Li\\Pictures\\test.jpg")
+        self.setPixmap(self.__images_)
 
     def resizeEvent(self, e: QResizeEvent) -> None:
         if self.__images_ is None:
             return
-        w = e.size().width()
-        h = e.size().height()
-        image = self.resizeFrame(w, h, self.__images_)
-        pixmap = QPixmap.fromImage(image)
-        self.__videoLabel_.setPixmap(pixmap)
+        pixmap = self.__resizeFrame(e.size().width(), e.size().height())
+        self.setPixmap(pixmap)
         QWidget.resizeEvent(self, e)
 
-    def resizeFrame(self, w_box, h_box, pil_image):  # 参数是：要适应的窗口宽、高、Image.open后的图片
-        w, h = pil_image.width(), pil_image.height() # 获取图像的原始大小
-        f1 = 1.0 * w_box / w
+    def __resizeFrame(self, w_box, h_box):  # 参数是：要适应的窗口宽、高、Image.open后的图片
+        w, h = self.__images_.width(), self.__images_.height() # 获取图像的原始大小
+        f1 = 1.0 * w / h
         f2 = 1.0 * h_box / h
         factor = min([f1, f2])
         width = int(w * factor)
         height = int(h * factor)
 
-        return pil_image.scaled(width, height)
+        return self.__images_.scaled(width, height, Qt.KeepAspectRatio)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
