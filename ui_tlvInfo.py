@@ -55,6 +55,8 @@ class UITlvInfo(QGroupBox):
         self.__toolBox_.setMinimumWidth(100)
         # 设置软件启动时默认打开导航栏的第几个 Item；这里设置的是打开第1个 Item。
         self.__toolBox_.setCurrentIndex(0)
+        # self.__toolBox_.setFrameShape(QToolBox.Shape.StyledPanel) # 为toolbox增加边框
+        # self.__toolBox_.set
 
         self.setFileInfoText(info)
         self.setTlvSdpText(sdp)

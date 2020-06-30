@@ -13,9 +13,7 @@ class UIVideoLabel(QLabel):
         self.__initUI()
 
     def __initUI(self):
-        # C:\Users\Li\Pictures\Tieba\test.jpg
-        self.__images_ = QPixmap('C:\\Users\\Li\\Pictures\\Tieba\\test.jpg')
-        # self.__images_ = QPixmap("C:\\Users\\Li\\Pictures\\test.jpg")
+        self.__images_ = QPixmap('./images/test.jpg')
         self.setPixmap(self.__images_)
 
     def resizeEvent(self, e: QResizeEvent) -> None:

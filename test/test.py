@@ -158,41 +158,228 @@ from PyQt5.QtGui import *
 #     form.show()
 #     sys.exit(app.exec_())
 
-import sys
-from PyQt5.QtCore import pyqtSignal, QObject
-from PyQt5.QtWidgets import QMainWindow, QApplication
+# import sys
+# from PyQt5.QtCore import pyqtSignal, QObject
+# from PyQt5.QtWidgets import QMainWindow, QApplication
+#
+#
+# class Communicate(QObject):
+#
+#     closeApp = pyqtSignal()
+#
+#
+# class Example(QMainWindow):
+#
+#     def __init__(self):
+#         super().__init__()
+#
+#         self.initUI()
+#
+#
+#     def initUI(self):
+#
+#         self.c = Communicate()
+#         self.c.closeApp.connect(self.close)
+#
+#         self.setGeometry(300, 300, 290, 150)
+#         self.setWindowTitle('Emit signal')
+#         self.show()
+#
+#
+#     def mousePressEvent(self, event):
+#
+#         self.c.closeApp.emit()
+#
+#
+# if __name__ == '__main__':
+#
+#     app = QApplication(sys.argv)
+#     ex = Example()
+#     sys.exit(app.exec_())
 
 
-class Communicate(QObject):
+# from PyQt5.QtWidgets import *
+# import sys
+#
+# class Window(QWidget):
+#
+#     def __init__(self):
+#         QWidget.__init__(self)
+#         layout = QVBoxLayout()
+#         availSize = QDesktopWidget().availableGeometry()
+#         self.setLayout(layout)
+#         self.resize(availSize.width()*0.5, availSize.height()*0.5)
+#
+#         # Add toolbar and items
+#         toolbox = QToolBox()
+#         layout.addWidget(toolbox)
+#         toolbox.addItem(QLabel(), "Students")
+#         toolbox.addItem(QLabel(), "Teachers")
+#         toolbox.addItem(QLabel(), "Directors")
+#
+#         # toolbox.setFrameShadow()
+#         # layout = toolbox.layout()
+#         # toolbox.setFrameShape(QToolBox.StyledPanel)
+#         # show number of items
+#         # print(toolbox.count())
+#
+#         # disable tab
+#         # toolbox.setItemEnabled(0, False)
+#
+#         # mouseover tooltip
+#         toolbox.setItemToolTip(0, "This is a tooltip")
+#
+#         # tests if items are enabled
+#         # print(toolbox.isItemEnabled(0))
+#         # print(toolbox.isItemEnabled(1))
+#
+#         # insert item
+#         item = QLabel()
+#         toolbox.insertItem(1, item, "Python")
+#
+# app = QApplication(sys.argv)
+# screen = Window()
+# screen.show()
+# sys.exit(app.exec_())
 
-    closeApp = pyqtSignal()
+
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Example(QMainWindow):
+class CollapsibleBox(QtWidgets.QWidget):
+    def __init__(self, title="", parent=None):
+        super(CollapsibleBox, self).__init__(parent)
 
-    def __init__(self):
-        super().__init__()
+        self.toggle_button = QtWidgets.QToolButton(text=title, checkable=True, checked=False)
+        # self.toggle_button.setStyleSheet("QToolButton { border: none; }")
+        self.toggle_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+        self.toggle_button.setArrowType(QtCore.Qt.RightArrow)
+        self.toggle_button.pressed.connect(self.on_pressed)
 
-        self.initUI()
+        # self.toggle_animation = QtCore.QParallelAnimationGroup(self)
+
+        self.content_area = QtWidgets.QScrollArea( maximumHeight=0, minimumHeight=0)
+        self.content_area.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.content_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.content_area.setHidden(True)
+
+        lay = QtWidgets.QVBoxLayout(self)
+        lay.setSpacing(0)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.addWidget(self.toggle_button)
+        lay.addWidget(self.content_area)
+
+        # self.toggle_animation.addAnimation(
+        #     QtCore.QPropertyAnimation(self, b"minimumHeight")
+        # )
+        # self.toggle_animation.addAnimation(
+        #     QtCore.QPropertyAnimation(self, b"maximumHeight")
+        # )
+        # self.toggle_animation.addAnimation(
+        #     QtCore.QPropertyAnimation(self.content_area, b"maximumHeight")
+        # )
+
+    @QtCore.pyqtSlot()
+    def on_pressed(self):
+        checked = self.toggle_button.isChecked()
+        self.toggle_button.setArrowType(
+            QtCore.Qt.DownArrow if not checked else QtCore.Qt.RightArrow
+        )
+        if checked is True:
+            self.content_area.setHidden(True)
+            # self.content_area.set
+        else:
+            self.content_area.setHidden(False)
+        # self.toggle_animation.setDirection(
+        #     QtCore.QAbstractAnimation.Forward
+        #     if not checked
+        #     else QtCore.QAbstractAnimation.Backward
+        # )
+        # self.toggle_animation.start()
+
+    def setContentLayout(self, layout):
+        lay = self.content_area.layout()
+        del lay
+        self.content_area.setLayout(layout)
+        # collapsed_height = (
+        #     self.sizeHint().height() - self.content_area.maximumHeight()
+        # )
+        # content_height = layout.sizeHint().height()
+        # # for i in range(self.toggle_animation.animationCount()):
+        # #     animation = self.toggle_animation.animationAt(i)
+        # #     animation.setDuration(500)
+        # #     animation.setStartValue(collapsed_height)
+        # #     animation.setEndValue(collapsed_height + content_height)
+        # #
+        # content_animation = self.toggle_animation.animationAt(
+        #     self.toggle_animation.animationCount() - 1
+        # )
+        # content_animation.setDuration(content_height)
+        # content_animation.setStartValue(0)
+        # content_animation.setEndValue(content_height)
 
 
-    def initUI(self):
+if __name__ == "__main__":
+    import sys
+    import random
 
-        self.c = Communicate()
-        self.c.closeApp.connect(self.close)
+    app = QtWidgets.QApplication(sys.argv)
+    w = QtWidgets.QMainWindow()
 
-        self.setGeometry(300, 300, 290, 150)
-        self.setWindowTitle('Emit signal')
-        self.show()
+    splitter = QSplitter(Qt.Horizontal)
+    splitter.setChildrenCollapsible(False)  # 拉动分割器至最小，被分割部分不会消失
+    splitter.setAutoFillBackground(True)  # 分割器随主窗口大小自适应变化
+    w.setCentralWidget(splitter)
 
+    group = QtWidgets.QGroupBox("Collapsible Demo")
 
-    def mousePressEvent(self, event):
+    qw = QtWidgets.QWidget()
+    qw.setObjectName('main_widget')
+    splitter.addWidget(qw)
 
-        self.c.closeApp.emit()
+    scroll = QtWidgets.QScrollArea()
+    splitter.addWidget(scroll)
+    # scroll.setWidget(group)
+    # gvlay = QVBoxLayout(scroll)
+    # group.setLayout(gvlay)
 
+    # content = QtWidgets.QWidget()
+    # content.setAutoFillBackground(True)
+    scroll.setWidget(group)
+    scroll.setWidgetResizable(True)
+    vlay = QtWidgets.QVBoxLayout()
+    # hlay = QtWidgets.QHBoxLayout()
+    vlay.setSpacing(0)
+    vlay.setContentsMargins(0, 0, 0, 0)
+    for i in range(30):
+        box = CollapsibleBox("Collapsible Box Header-{}".format(i))
+        box.setAutoFillBackground(True)
+        vlay.addWidget(box)
+        lay = QtWidgets.QVBoxLayout()
+        # for j in range(8):
+        #     label = QtWidgets.QLabel("{}".format(j))
+        #     color = QtGui.QColor(*[random.randint(0, 255) for _ in range(3)])
+        #     label.setStyleSheet(
+        #         "background-color: {}; color : white;".format(color.name())
+        #     )
+        #     label.setAlignment(QtCore.Qt.AlignCenter)
+        #     lay.addWidget(label)
+        text_brw = QTextBrowser()
+        text_brw.setText('''this is an example!
+this is an apple!
+this is a banana!
+this is a pen!
+end''')
+        text_brw.setFrameShape(QTextBrowser.NoFrame)
+        lay.addWidget(text_brw)
 
-if __name__ == '__main__':
+        box.setContentLayout(lay)
 
-    app = QApplication(sys.argv)
-    ex = Example()
+    # vlay.addStretch()
+    # hlay.addStretch(1)
+    # hlay.addLayout(vlay)
+    # hlay.addStretch(1)
+    group.setLayout(vlay)
+    w.resize(640, 480)
+    w.show()
     sys.exit(app.exec_())
