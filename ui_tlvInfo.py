@@ -3,7 +3,7 @@ import os
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QDesktopWidget,
                              QGroupBox, QWidget, QTextBrowser,
                              QLabel, QSplitter, QPushButton,
-                             QDialog, QFormLayout)
+                             QDialog, QVBoxLayout, QHBoxLayout, QToolBox)
 from PyQt5.QtCore import Qt
 
 
@@ -22,73 +22,64 @@ a=rtpmap:0 PCMU/8000
 m=video 51372 RTP/AVP 31
 a=rtpmap:31 H261/90000
 m=video 53000 RTP/AVP 32
+a=rtpmap:32 MPV/90000
+
+o=alice 2890844526 2890844526 IN IP4 host.anywhere.com
+s=
+c=IN IP4 host.anywhere.com
+t=0 0
+m=audio 49170 RTP/AVP 0
+a=rtpmap:0 PCMU/8000
+m=video 51372 RTP/AVP 31
+a=rtpmap:31 H261/90000
+m=video 53000 RTP/AVP 32
 a=rtpmap:32 MPV/90000'''
 
 class UITlvInfo(QGroupBox):
-    __vlayout_ = None
-    __sdp_ = None
-    __codec_ = None
+    __codecinfo_ = None
+    __sdpinfo_ = None
+    __fileinfo_ = None
 
     def __init__(self, title: str):
         super(UITlvInfo, self).__init__(title)
         self.__initUI()
 
     def __initUI(self):
-        self.setMinimumWidth(100)
+        vlayout = QVBoxLayout(self)
+        self.__toolBox_ = QToolBox()
+        vlayout.addWidget(self.__toolBox_)
+
+        #  设置左侧导航栏 toolBox 初始化时的宽度
+        self.__toolBox_.setStyleSheet("QToolBoxButton { min-width:180px}")
+        # 设置左侧导航栏 toolBox 在左右拉拽时的最小宽度
+        self.__toolBox_.setMinimumWidth(100)
+        # 设置软件启动时默认打开导航栏的第几个 Item；这里设置的是打开第1个 Item。
+        self.__toolBox_.setCurrentIndex(0)
+
         self.setFileInfoText(info)
         self.setTlvSdpText(sdp)
         self.setTlvCodecText('')
-        self.setLayout(self.__vlayout_)
 
     def setFileInfoText(self, text: str):
-        self.__flayout_ = QFormLayout()
-        text_brw = QTextBrowser()
-        text_brw.append(text)
-        self.__flayout_.addWidget(text_brw)
+        if self.__fileinfo_ is None:
+            self.__fileinfo_ = QTextBrowser()
+            self.__toolBox_.addItem(self.__fileinfo_, "File Info")
+
+        self.__fileinfo_.setText(text)
 
     def setTlvSdpText(self, text):
-        sdp_btn = QPushButton('Sdp Info')
-        sdp_btn.clicked.connect(self.__TlvSdpMessage)
+        if self.__sdpinfo_ is None:
+            self.__sdpinfo_ = QTextBrowser()
+            self.__toolBox_.addItem(self.__sdpinfo_, 'Sdp Info')
 
-        sdp_msg = QTextBrowser()
-        sdp_msg.setText(text)
-        self.__sdpDialog_ = QDialog()
-        self.__sdpDialog_.setWindowTitle('Sdp Info')
-        hlayout = QHBoxLayout()
-        vlayout = QVBoxLayout()
-        hlayout.addStretch(1)
-        hlayout.addWidget(sdp_msg)
-        hlayout.addStretch(1)
-        vlayout.addStretch(1)
-        vlayout.addLayout(hlayout)
-        vlayout.addStretch(1)
-        self.__sdpDialog_.setLayout(vlayout)
-        self.__flayout_.addWidget(sdp_btn)
-
-    def __TlvSdpMessage(self):
-        self.__sdpDialog_.show()
+        self.__sdpinfo_.setText(text)
 
     def setTlvCodecText(self, text):
-        codec_btn = QPushButton('Codec Info')
-        codec_btn.clicked.connect(self.__TlvCodecMessage)
+        if self.__codecinfo_ is None:
+            self.__codecinfo_ = QTextBrowser()
+            self.__toolBox_.addItem(self.__codecinfo_, 'Codec Info')
 
-        codec_msg = QTextBrowser()
-        codec_msg.setText(text)
-        self.__CodecDialog_ = QDialog()
-        self.__CodecDialog_.setWindowTitle('Codec Info')
-        hlayout = QHBoxLayout()
-        vlayout = QVBoxLayout()
-        hlayout.addStretch(1)
-        hlayout.addWidget(codec_msg)
-        hlayout.addStretch(1)
-        vlayout.addStretch(1)
-        vlayout.addLayout(hlayout)
-        vlayout.addStretch(1)
-        self.__CodecDialog_.setLayout(vlayout)
-        self.__flayout_.addWidget(codec_btn)
-
-    def __TlvCodecMessage(self):
-        self.__CodecDialog_.show()
+        self.__codecinfo_.setText(text)
 
 
 class testMainWin(QMainWindow):

@@ -8,7 +8,9 @@ from PyQt5.QtWidgets import (QMainWindow, QWidget, QMenu, QDialog,
                              QDockWidget, QSplitter, QFormLayout)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QResizeEvent
-from ui_menubar import UI_menuBar
+from ui_menubar import UIMenuBar
+from ui_tlvInfo import UITlvInfo
+from ui_mediaDisplay import UIVideoLabel
 
 
 class UI_mainWindow(QMainWindow):
@@ -24,7 +26,11 @@ class UI_mainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.__vsplitter_ = QSplitter(Qt.Vertical)
+        self.__vsplitter_.setChildrenCollapsible(False) # 拉动分割器至最小，被分割部分不会消失
+        self.__vsplitter_.setAutoFillBackground(True) # 分割器随主窗口大小自适应变化
         self.__hsplitter_ = QSplitter(Qt.Horizontal)
+        self.__hsplitter_.setChildrenCollapsible(False)
+        self.__hsplitter_.setAutoFillBackground(True)
         self.__initTlvInfoLayout()
         self.__initVideoLayout()
         self.__initAudioLayout()
@@ -36,7 +42,7 @@ class UI_mainWindow(QMainWindow):
         self.resize(availGeometry.width()*0.7, availGeometry.height()*0.7)
         self.__center()
 
-        self.__menubar_ = UI_menuBar()
+        self.__menubar_ = UIMenuBar()
         self.setMenuBar(self.__menubar_)
         self.setCentralWidget(self.__hsplitter_)
         self.setWindowTitle('tlv分析工具')
@@ -48,13 +54,14 @@ class UI_mainWindow(QMainWindow):
         self.move(qr.topLeft())
 
     def __initTlvInfoLayout(self):
-        tlvinfo = QLabel('FILE INFO')
-        tlvinfo.setFrameShape(QLabel.StyledPanel)
-        flayout = QFormLayout()
-        flayout.addRow(tlvinfo)
-        tlvInfoGB = QGroupBox("TLV INFO")
-        tlvInfoGB.setLayout(flayout)
-        self.__hsplitter_.addWidget(tlvInfoGB)
+        tlvinfo = UITlvInfo('TLV INFO')
+        tlvinfo.setMinimumWidth(250)
+        # tlvinfo.setFrameShape(QLabel.StyledPanel)
+        # flayout = QFormLayout()
+        # flayout.addRow(tlvinfo)
+        # tlvInfoGB = QGroupBox("TLV INFO")
+        # tlvInfoGB.setLayout(flayout)
+        self.__hsplitter_.addWidget(tlvinfo)
 
     def __initTlvPkgListLayout(self):
         vlayout = QVBoxLayout()
@@ -66,9 +73,8 @@ class UI_mainWindow(QMainWindow):
         self.__hsplitter_.addWidget(tlvPkgList)
 
     def __initVideoLayout(self):
-        label = UI_videoLabel()
-        label.setMinimumSize(320, 240)
-        # video.setGeometry(0,0, 320, 240)
+        label = UIVideoLabel()
+        label.setMinimumSize(640, 480)
         hlayout = QHBoxLayout()
         hlayout.addStretch(1)
         hlayout.addWidget(label)
@@ -93,36 +99,6 @@ class UI_mainWindow(QMainWindow):
         self.__vsplitter_.setSizes([420, 300])
         self.__hsplitter_.addWidget(self.__vsplitter_)
 
-
-class UI_videoLabel(QLabel):
-    __images_ = None
-
-    def __init__(self):
-        super(UI_videoLabel, self).__init__()
-        self.__initUI()
-
-    def __initUI(self):
-        # C:\Users\Li\Pictures\Tieba\test.jpg
-        self.__images_ = QPixmap('C:\\Users\\Li\\Pictures\\Tieba\\test.jpg')
-        # self.__images_ = QPixmap("C:\\Users\\Li\\Pictures\\test.jpg")
-        self.setPixmap(self.__images_)
-
-    def resizeEvent(self, e: QResizeEvent) -> None:
-        if self.__images_ is None:
-            return
-        pixmap = self.__resizeFrame(e.size().width(), e.size().height())
-        self.setPixmap(pixmap)
-        QWidget.resizeEvent(self, e)
-
-    def __resizeFrame(self, w_box, h_box):  # 参数是：要适应的窗口宽、高、Image.open后的图片
-        w, h = self.__images_.width(), self.__images_.height() # 获取图像的原始大小
-        f1 = 1.0 * w / h
-        f2 = 1.0 * h_box / h
-        factor = min([f1, f2])
-        width = int(w * factor)
-        height = int(h * factor)
-
-        return self.__images_.scaled(width, height, Qt.KeepAspectRatio)
 
 
 if __name__ == '__main__':

@@ -3,13 +3,12 @@ import os
 from PyQt5.QtWidgets import (QMainWindow, QWidget, QMenuBar, QDialog,
                              QMessageBox, QApplication,
                              QAction, qApp, QLabel, QFileDialog,
-                             QHBoxLayout, QVBoxLayout)
+                             QHBoxLayout, QVBoxLayout, QDesktopWidget)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 
 
-class UI_menuBar(QMenuBar):
-    __style_ = 'Fusion'
+class UIMenuBar(QMenuBar):
     __aboutText_ = '''
 这是一个tlv分析工具，
 用于分析tlv中缓存的RTP
@@ -19,9 +18,7 @@ class UI_menuBar(QMenuBar):
 
       作者：lijiahao
 '''
-    __background_ = (1920, 1080)
-    __winResolution_ = (1280, 720)
-    __cwd_ = os.getcwd()
+    # __cwd_ = os.getcwd()
     __itemDialog_ = None
 
     def __init__(self):
@@ -31,16 +28,13 @@ class UI_menuBar(QMenuBar):
         self.__initAbout()
 
 #public:
-    # def showTest(self):
-    #     self.windows = QMainWindow()
-    #     self.windows.setMenuBar(self)
-    #     self.windows.setGeometry(
-    #             (self.__background_[0] - self.__winResolution_[0]) / 2,
-    #             (self.__background_[1] - self.__winResolution_[1]) / 2,
-    #             self.__winResolution_[0], self.__winResolution_[1])
-    #     self.windows.setWindowTitle('tlv分析工具')
-    #     self.windows.show()
-    #     return self.__application.exec_()
+    def showTest(self):
+        availGeometry = QDesktopWidget().availableGeometry()
+        self.windows = QMainWindow()
+        self.windows.setMenuBar(self)
+        self.windows.resize(availGeometry.width()*0.5, availGeometry.height()*0.5)
+        self.windows.setWindowTitle('tlv分析工具')
+        self.windows.show()
 
 #private:
     def __addActExit(self):
@@ -104,7 +98,7 @@ class UI_menuBar(QMenuBar):
     def __onFileDialog(self):
         self.__filePath_, fileType = QFileDialog().getOpenFileName(self
                                                                    , "选取tlv文件"
-                                                                   , self.__cwd_
+                                                                   , os.getcwd()
                                                                    , "All Files (*);;Tlv Files (*.tlv*)")
 
         if self.__filePath_ == '':
@@ -130,8 +124,8 @@ class UI_menuBar(QMenuBar):
         self.__itemDialog_.show()
 
 
-# if __name__ == '__main__':
-#     app = QApplication(sys.argv)
-#     ex = UI_menuBar()
-#     ret = ex.showTest()
-#     sys.exit(ret)
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = UIMenuBar()
+    ex.showTest()
+    sys.exit(app.exec_())

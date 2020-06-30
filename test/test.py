@@ -134,26 +134,65 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 
-class Form(QDialog):
-    def __init__(self, text: str, parent=None):
-        super(Form, self).__init__(parent)
-        self.browser = QTextBrowser()
-        self.browser.setText(text)
-        self.click = QPushButton('OK')
-        layout = QVBoxLayout()
-        layout.addWidget(self.browser)
-        layout.addWidget(self.click)
-        self.setLayout(layout)
-        self.click.clicked.connect(self.updateUi)
-        # self.connect(self.click, SIGNAL("clicked()"), )
-        self.setWindowTitle("Calculate")
+# class Form(QDialog):
+#     def __init__(self, text: str, parent=None):
+#         super(Form, self).__init__(parent)
+#         self.browser = QTextBrowser()
+#         self.browser.setText(text)
+#         self.click = QPushButton('OK')
+#         layout = QVBoxLayout()
+#         layout.addWidget(self.browser)
+#         layout.addWidget(self.click)
+#         self.setLayout(layout)
+#         self.click.clicked.connect(self.updateUi)
+#         # self.connect(self.click, SIGNAL("clicked()"), )
+#         self.setWindowTitle("Calculate")
+#
+#     def updateUi(self):
+#         self.browser.append("%s" % 'This is a test')
+#
+#
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+#     form = Form('hehe')
+#     form.show()
+#     sys.exit(app.exec_())
 
-    def updateUi(self):
-        self.browser.append("%s" % 'This is a test')
+import sys
+from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtWidgets import QMainWindow, QApplication
+
+
+class Communicate(QObject):
+
+    closeApp = pyqtSignal()
+
+
+class Example(QMainWindow):
+
+    def __init__(self):
+        super().__init__()
+
+        self.initUI()
+
+
+    def initUI(self):
+
+        self.c = Communicate()
+        self.c.closeApp.connect(self.close)
+
+        self.setGeometry(300, 300, 290, 150)
+        self.setWindowTitle('Emit signal')
+        self.show()
+
+
+    def mousePressEvent(self, event):
+
+        self.c.closeApp.emit()
 
 
 if __name__ == '__main__':
+
     app = QApplication(sys.argv)
-    form = Form('hehe')
-    form.show()
+    ex = Example()
     sys.exit(app.exec_())

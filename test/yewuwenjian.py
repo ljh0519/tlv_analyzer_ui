@@ -20,8 +20,8 @@ class My_Main_window(Ui_MainWindow):
         self.verticalLayout.addWidget(toolBox)
 
         # #  下面两行为设置 QSplitter 分割器伸缩大小因子，但是这样设置全屏后导航栏放大了不好看
-        # self.splitter.setStretchFactor(0, 30)  # 分割器左边第1个占比例30%
-        # self.splitter.setStretchFactor(1, 70)  # 分割器左边第1个占比例70%
+        self.splitter.setStretchFactor(0, 30)  # 分割器左边第1个占比例30%
+        self.splitter.setStretchFactor(1, 70)  # 分割器左边第1个占比例70%
 
         #  下面一行为设置 QSplitter 分割器伸缩大小因子，但是这样设置全屏后导航栏放大了比较好看；不清楚原因。
         self.splitter.setStretchFactor(0, 0)  # 此函数用于设定：控件是否可伸缩。第一个参数用于指定控件的序号。第二个函数大于0时，表示控件可伸缩，小于0时，表示控件不可伸缩。
