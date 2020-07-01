@@ -56,10 +56,7 @@ class UIMenuBar(QMenuBar):
             self.__itemDialog_ = None
 
         self.__itemDialog_ = QDialog()
-        self.__itemDialog_.setGeometry(
-                (self.__background_[0] - self.__winResolution_[0]) / 2,
-                (self.__background_[1] - self.__winResolution_[1]) / 2,
-                300, 150)
+        self.__itemDialog_.resize(300, 150)
         self.__itemDialog_.setWindowTitle('关于')
         hlayout = QHBoxLayout()
         text = QLabel()
@@ -109,10 +106,7 @@ class UIMenuBar(QMenuBar):
             self.__itemDialog_ = None
 
         self.__itemDialog_ = QDialog()
-        self.__itemDialog_.setGeometry(
-                (self.__background_[0] - self.__winResolution_[0]) / 2,
-                (self.__background_[1] - self.__winResolution_[1]) / 2,
-                500, 80)
+        self.__itemDialog_.resize(500, 80)
         self.__itemDialog_.setWindowTitle('文件路径')
         text = QLabel(self.__itemDialog_)
         if self.__filePath_ == '':

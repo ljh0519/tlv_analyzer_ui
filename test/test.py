@@ -126,12 +126,12 @@
 #     window.show()
 #     sys.exit(app.exec_() )
 
-from __future__ import division
-import sys
-from PyQt5.QtWidgets import *
-from math import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+# from __future__ import division
+# import sys
+# from PyQt5.QtWidgets import *
+# from math import *
+# from PyQt5.QtCore import *
+# from PyQt5.QtGui import *
 
 
 # class Form(QDialog):
@@ -243,142 +243,119 @@ from PyQt5.QtGui import *
 # sys.exit(app.exec_())
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtWidgets import (QWidget, QSplitter, QToolButton,
+                             QScrollArea, QSizePolicy, QFrame,
+                             QVBoxLayout, QGroupBox, QApplication,
+                             QMainWindow, QTextBrowser, QLabel)
 
 
-class CollapsibleBox(QtWidgets.QWidget):
+class CollapsibleBox(QWidget):
     def __init__(self, title="", parent=None):
         super(CollapsibleBox, self).__init__(parent)
 
-        self.toggle_button = QtWidgets.QToolButton(text=title, checkable=True, checked=False)
-        # self.toggle_button.setStyleSheet("QToolButton { border: none; }")
+        self.toggle_button = QToolButton(text=title, checkable=True, checked=False)
+        self.toggle_button.setStyleSheet('''QToolButton{ 
+        border: none;
+        list-style-type: decimal;
+        }''')
         self.toggle_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
         self.toggle_button.setArrowType(QtCore.Qt.RightArrow)
-        self.toggle_button.pressed.connect(self.on_pressed)
+        self.toggle_button.clicked.connect(self.on_clicked)
 
-        # self.toggle_animation = QtCore.QParallelAnimationGroup(self)
-
-        self.content_area = QtWidgets.QScrollArea( maximumHeight=0, minimumHeight=0)
-        self.content_area.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        self.content_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.content_area = QScrollArea()
+        self.content_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.content_area.setFrameShape(QFrame.NoFrame)
         self.content_area.setHidden(True)
 
-        lay = QtWidgets.QVBoxLayout(self)
+        lay = QVBoxLayout(self)
         lay.setSpacing(0)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.addWidget(self.toggle_button)
         lay.addWidget(self.content_area)
 
-        # self.toggle_animation.addAnimation(
-        #     QtCore.QPropertyAnimation(self, b"minimumHeight")
-        # )
-        # self.toggle_animation.addAnimation(
-        #     QtCore.QPropertyAnimation(self, b"maximumHeight")
-        # )
-        # self.toggle_animation.addAnimation(
-        #     QtCore.QPropertyAnimation(self.content_area, b"maximumHeight")
-        # )
-
     @QtCore.pyqtSlot()
-    def on_pressed(self):
+    def on_clicked(self):
         checked = self.toggle_button.isChecked()
         self.toggle_button.setArrowType(
-            QtCore.Qt.DownArrow if not checked else QtCore.Qt.RightArrow
+            QtCore.Qt.DownArrow if checked else QtCore.Qt.RightArrow
         )
-        if checked is True:
-            self.content_area.setHidden(True)
-            # self.content_area.set
-        else:
+        if checked:
             self.content_area.setHidden(False)
-        # self.toggle_animation.setDirection(
-        #     QtCore.QAbstractAnimation.Forward
-        #     if not checked
-        #     else QtCore.QAbstractAnimation.Backward
-        # )
-        # self.toggle_animation.start()
+        else:
+            self.content_area.setHidden(True)
 
     def setContentLayout(self, layout):
         lay = self.content_area.layout()
         del lay
         self.content_area.setLayout(layout)
-        # collapsed_height = (
-        #     self.sizeHint().height() - self.content_area.maximumHeight()
-        # )
-        # content_height = layout.sizeHint().height()
-        # # for i in range(self.toggle_animation.animationCount()):
-        # #     animation = self.toggle_animation.animationAt(i)
-        # #     animation.setDuration(500)
-        # #     animation.setStartValue(collapsed_height)
-        # #     animation.setEndValue(collapsed_height + content_height)
-        # #
-        # content_animation = self.toggle_animation.animationAt(
-        #     self.toggle_animation.animationCount() - 1
-        # )
-        # content_animation.setDuration(content_height)
-        # content_animation.setStartValue(0)
-        # content_animation.setEndValue(content_height)
 
+
+class UITlvPkgList(QScrollArea):
+    def __init__(self, text: str):
+        super(UITlvPkgList, self).__init__()
+        self.__initUI(text)
+
+    def __initUI(self, text: str):
+        group = QGroupBox(text)
+        self.setWidget(group)
+        self.__gvlayout_ = QVBoxLayout()
+        self.__gvlayout_.setSpacing(0)
+        self.__gvlayout_.setContentsMargins(1, 1, 1, 1)
+        group.setLayout(self.__gvlayout_)
+
+    def insertTlvPkgItem(self, title: str, text: str, color: str):
+        box = CollapsibleBox("Collapsible Box Header-{}".format(i))
+        box.setAutoFillBackground(True)
+
+
+    def changeTlvPkgItemState(self):
+        pass
+
+    # def
 
 if __name__ == "__main__":
     import sys
-    import random
 
-    app = QtWidgets.QApplication(sys.argv)
-    w = QtWidgets.QMainWindow()
+    app = QApplication(sys.argv)
+    w = QMainWindow()
 
-    splitter = QSplitter(Qt.Horizontal)
+    splitter = QSplitter(QtCore.Qt.Horizontal)
     splitter.setChildrenCollapsible(False)  # 拉动分割器至最小，被分割部分不会消失
     splitter.setAutoFillBackground(True)  # 分割器随主窗口大小自适应变化
     w.setCentralWidget(splitter)
 
-    group = QtWidgets.QGroupBox("Collapsible Demo")
-
-    qw = QtWidgets.QWidget()
+    qw = QWidget()
     qw.setObjectName('main_widget')
     splitter.addWidget(qw)
 
-    scroll = QtWidgets.QScrollArea()
-    splitter.addWidget(scroll)
-    # scroll.setWidget(group)
-    # gvlay = QVBoxLayout(scroll)
-    # group.setLayout(gvlay)
-
-    # content = QtWidgets.QWidget()
-    # content.setAutoFillBackground(True)
-    scroll.setWidget(group)
+    scroll = QScrollArea()
+    scroll.setMinimumWidth(300)
+    scroll.setStyleSheet("QScrollArea{border: none;}")
     scroll.setWidgetResizable(True)
-    vlay = QtWidgets.QVBoxLayout()
-    # hlay = QtWidgets.QHBoxLayout()
+    splitter.addWidget(scroll)
+
+    group = QGroupBox("Collapsible Demo")
+    scroll.setWidget(group)
+
+    vlay = QVBoxLayout()
     vlay.setSpacing(0)
-    vlay.setContentsMargins(0, 0, 0, 0)
+    vlay.setContentsMargins(1, 1, 1, 1)
     for i in range(30):
         box = CollapsibleBox("Collapsible Box Header-{}".format(i))
         box.setAutoFillBackground(True)
         vlay.addWidget(box)
-        lay = QtWidgets.QVBoxLayout()
-        # for j in range(8):
-        #     label = QtWidgets.QLabel("{}".format(j))
-        #     color = QtGui.QColor(*[random.randint(0, 255) for _ in range(3)])
-        #     label.setStyleSheet(
-        #         "background-color: {}; color : white;".format(color.name())
-        #     )
-        #     label.setAlignment(QtCore.Qt.AlignCenter)
-        #     lay.addWidget(label)
-        text_brw = QTextBrowser()
+        lay = QVBoxLayout()
+        text_brw = QLabel()
+        # text_brw.setAlignment()
         text_brw.setText('''this is an example!
 this is an apple!
 this is a banana!
 this is a pen!
 end''')
-        text_brw.setFrameShape(QTextBrowser.NoFrame)
         lay.addWidget(text_brw)
-
         box.setContentLayout(lay)
 
-    # vlay.addStretch()
-    # hlay.addStretch(1)
-    # hlay.addLayout(vlay)
-    # hlay.addStretch(1)
     group.setLayout(vlay)
     w.resize(640, 480)
     w.show()
