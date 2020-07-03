@@ -1,16 +1,14 @@
 import sys
-import os
-from PyQt5.QtWidgets import (QMainWindow, QWidget, QMenu, QDialog,
-                             QMessageBox, QApplication,
-                             QAction, qApp, QLabel, QFileDialog,
-                             QPushButton, QVBoxLayout, QHBoxLayout,
-                             QGroupBox, QGridLayout, QDesktopWidget,
-                             QDockWidget, QSplitter, QFormLayout)
+# import os
+from PyQt5.QtWidgets import (QMainWindow, QApplication, QLabel,
+                              QVBoxLayout, QHBoxLayout,
+                             QGroupBox,  QDesktopWidget, QSplitter)
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QResizeEvent
+# from PyQt5.QtGui import QPixmap, QResizeEvent
 from ui_menu_bar import UIMenuBar
 from ui_tlv_info import UITlvInfo
 from ui_media_display import UIVideoLabel
+from ui_tlv_pkg_list import UITlvPkgList
 
 
 class UI_mainWindow(QMainWindow):
@@ -25,6 +23,7 @@ class UI_mainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        # self.setWindowFlag(Qt.FramelessWindowHint)
         self.__vsplitter_ = QSplitter(Qt.Vertical)
         self.__vsplitter_.setChildrenCollapsible(False) # 拉动分割器至最小，被分割部分不会消失
         self.__vsplitter_.setAutoFillBackground(True) # 分割器随主窗口大小自适应变化
@@ -56,21 +55,22 @@ class UI_mainWindow(QMainWindow):
     def __initTlvInfoLayout(self):
         tlvinfo = UITlvInfo('TLV INFO')
         tlvinfo.setMinimumWidth(250)
-        # tlvinfo.setFrameShape(QLabel.StyledPanel)
-        # flayout = QFormLayout()
-        # flayout.addRow(tlvinfo)
-        # tlvInfoGB = QGroupBox("TLV INFO")
-        # tlvInfoGB.setLayout(flayout)
         self.__hsplitter_.addWidget(tlvinfo)
 
     def __initTlvPkgListLayout(self):
-        vlayout = QVBoxLayout()
-        vlayout.addStretch(1)
-        vlayout.addWidget(QLabel('TLV Package'))
-        vlayout.addStretch(1)
-        tlvPkgList = QGroupBox("TLV Package")
-        tlvPkgList.setLayout(vlayout)
-        self.__hsplitter_.addWidget(tlvPkgList)
+        self.__tlvpkglist_ = UITlvPkgList('Tlv Pkg List')
+        for i in range(30):
+            pkg_level = UITlvPkgList.PKG_LEVEL.NORMAL
+            if i % 10 == 0:
+                pkg_level = UITlvPkgList.PKG_LEVEL.LOSS
+            elif i % 11 == 0:
+                pkg_level = UITlvPkgList.PKG_LEVEL.ORDER
+            self.__tlvpkglist_.insertTlvPkgItem("H264 RTP Header #{:<10d}".format(i), '''this is an example!
+        this is an apple!
+        this is a banana!
+        this is a pen!
+        end''', pkg_level)
+        self.__hsplitter_.addWidget(self.__tlvpkglist_)
 
     def __initVideoLayout(self):
         label = UIVideoLabel()

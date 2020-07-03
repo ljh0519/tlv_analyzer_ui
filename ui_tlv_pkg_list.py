@@ -1,21 +1,23 @@
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import (QWidget, QSplitter, QToolButton,
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import (QWidget, QToolButton,
                              QScrollArea, QSizePolicy, QFrame,
-                             QVBoxLayout, QGroupBox, QApplication,
-                             QMainWindow, QTextBrowser, QLabel)
+                             QVBoxLayout, QApplication,
+                             QMainWindow, QLabel)
 
 
 class CollapsibleBox(QWidget):
-    def __init__(self, title="", parent=None):
+    def __init__(self, title: str, bg_color: str, parent=None):
         super(CollapsibleBox, self).__init__(parent)
 
+        self.setAutoFillBackground(True)
         self.toggle_button = QToolButton(text=title, checkable=True, checked=False)
-        self.toggle_button.setStyleSheet('''QToolButton{ 
-        border: none;
-        list-style-type: decimal;
-        }''')
+        style_sheet = "border: none;"
+        style_sheet += "border-image: url(" + bg_color + ");"
+        style_sheet += "font: bold 15px;"
+        self.toggle_button.setStyleSheet(style_sheet)
         self.toggle_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
         self.toggle_button.setArrowType(QtCore.Qt.RightArrow)
+        self.toggle_button.setMinimumHeight(30)
         self.toggle_button.clicked.connect(self.on_clicked)
 
         self.content_area = QScrollArea()
@@ -46,34 +48,49 @@ class CollapsibleBox(QWidget):
         self.content_area.setLayout(layout)
 
 
-class UITlvPkgList(QScrollArea):
+class UITlvPkgList(QWidget):
+    class PKG_LEVEL():
+        NORMAL = ''                         # 正常
+        LOSS = 'images/note_red.png'         # 丢包
+        ORDER = 'images/note_yellow.png'     # 乱序
+
     def __init__(self, text: str):
         super(UITlvPkgList, self).__init__()
         self.__initUI(text)
 
     def __initUI(self, text: str):
-        self.setMinimumWidth(300)
-        self.setStyleSheet("QScrollArea{border: none;}")
-        self.setWidgetResizable(True)
-        group = QGroupBox(text)
-        self.setWidget(group)
-        self.__gvlay__ = QVBoxLayout()
-        self.__gvlay__.setSpacing(0)
-        self.__gvlay__.setContentsMargins(1, 1, 1, 1)
-        group.setLayout(self.__gvlay__)
+        self.setMinimumWidth(320)
+        self.setAutoFillBackground(True)
+        v_lay = QVBoxLayout()
+        self.__scroll_ = QScrollArea()
+        self.__scroll_.setStyleSheet("QScrollArea{border: none;}")
+        self.__scroll_.setWidgetResizable(True)
+        title = QLabel()
+        title.setText(text)
+        title.setMinimumHeight(30)
+        title.setAlignment(QtCore.Qt.AlignCenter)
+        title.setAutoFillBackground(True)
 
-    def insertTlvPkgItem(self, title: str, text: str, color: str):
-        box = CollapsibleBox(title)
-        box.setAutoFillBackground(True)
-        self.__gvlay__.addWidget(box)
+        v_lay.addWidget(title)
+        v_lay.addWidget(self.__scroll_)
+        v_lay.setContentsMargins(5, 5, 5, 5)
+        self.setLayout(v_lay)
+
+        pkg_list = QWidget()
+        pkg_list.setAutoFillBackground(True)
+        self.__scroll_.setWidget(pkg_list)
+        self.__pkg_list_vlay_ = QVBoxLayout()
+        self.__pkg_list_vlay_.setSpacing(0)
+        self.__pkg_list_vlay_.setContentsMargins(1, 1, 1, 1)
+        pkg_list.setLayout(self.__pkg_list_vlay_)
+
+    def insertTlvPkgItem(self, title: str, text: str, bg_color: str):
+        box = CollapsibleBox(title, bg_color)
+        self.__pkg_list_vlay_.addWidget(box)
         lay = QVBoxLayout()
         text_brw = QLabel()
-        # text_brw.setAlignment()
-        text_brw.setText('''this is an example!
-this is an apple!
-this is a banana!
-this is a pen!
-end''')
+        text_brw.setText(text)
+        text_brw.setAlignment(QtCore.Qt.AlignCenter)        # 居中对齐
         lay.addWidget(text_brw)
         box.setContentLayout(lay)
 
@@ -87,24 +104,25 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     w = QMainWindow()
 
-    splitter = QSplitter(QtCore.Qt.Horizontal)
-    splitter.setChildrenCollapsible(False)  # 拉动分割器至最小，被分割部分不会消失
-    splitter.setAutoFillBackground(True)  # 分割器随主窗口大小自适应变化
-    w.setCentralWidget(splitter)
+    q = QWidget()
+    w.setCentralWidget(q)
 
-    qw = QWidget()
-    qw.setObjectName("Collapsible Demo")
-    splitter.addWidget(qw)
-
-    scroll = UITlvPkgList('ascacsac')
-    splitter.addWidget(scroll)
+    vlay = QVBoxLayout()
+    q.setLayout(vlay)
+    scroll = UITlvPkgList('Tlv Pkg List')
+    vlay.addWidget(scroll)
     for i in range(30):
+        pkg_level = UITlvPkgList.PKG_LEVEL.NORMAL
+        if i % 10 == 0:
+            pkg_level = UITlvPkgList.PKG_LEVEL.LOSS
+        elif i % 11 == 0:
+            pkg_level = UITlvPkgList.PKG_LEVEL.ORDER
         scroll.insertTlvPkgItem("Collapsible Box Header-{}".format(i), '''this is an example!
 this is an apple!
 this is a banana!
 this is a pen!
-end''', '#999999')
+end''', pkg_level)
 
-    w.resize(640, 480)
+    w.resize(400, 480)
     w.show()
     sys.exit(app.exec_())
