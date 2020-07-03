@@ -8,9 +8,9 @@ from PyQt5.QtWidgets import (QMainWindow, QWidget, QMenu, QDialog,
                              QDockWidget, QSplitter, QFormLayout)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QResizeEvent
-from ui_menubar import UIMenuBar
-from ui_tlvInfo import UITlvInfo
-from ui_mediaDisplay import UIVideoLabel
+from ui_menu_bar import UIMenuBar
+from ui_tlv_info import UITlvInfo
+from ui_media_display import UIVideoLabel
 
 
 class UI_mainWindow(QMainWindow):
